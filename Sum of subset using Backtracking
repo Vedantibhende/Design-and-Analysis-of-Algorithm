@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SUBSETS 10000
+#define MAX_ELEMENTS 100
+
+
+typedef struct {
+	int data[MAX_ELEMENTS];
+	int size;
+} Subset;
+
+Subset results[MAX_SUBSETS];
+int result_count = 0;
+
+int current_subset[MAX_ELEMENTS];
+int current_size = 0;
+
+void backtrack(int index, int n, int arr[], int target, int current_sum) {
+	if (current_sum == target) {
+
+		results[result_count].size = current_size;
+		for (int i = 0; i < current_size; i++) {
+			results[result_count].data[i] = current_subset[i];
+		}
+		result_count++;
+	}
+
+	if (index == n || current_sum > target) {
+		return;
+	}
+
+	for (int i = index; i < n; i++) {
+		current_subset[current_size++] = arr[i];
+		backtrack(i + 1, n, arr, target, current_sum + arr[i]);
+		current_size--; // Backtrack
+	}
+}
+
+int main() {
+	int n, target;
+	if (scanf("%d", &n) != 1) return 0;
+
+	int arr[n];
+	for (int i = 0; i < n; i++) {
+		if (scanf("%d", &arr[i]) != 1) return 0;
+	}
+	if (scanf("%d", &target) != 1) return 0;
+
+	backtrack(0, n, arr, target, 0);
+
+	if (result_count == 0) {
+		printf("-1\n");
+	} else {
+        // Print in reverse order of discovery
+		for (int i = result_count - 1; i >= 0; i--) {
+			for (int j = 0; j < results[i].size; j++) {
+				printf("%d", results[i].data[j]);
+				if (j < results[i].size - 1) {
+					printf(" ");
+				}
+			}
+			printf(" \n");
+		}
+	}
+
+	return 0;
+}
